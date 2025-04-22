@@ -1,0 +1,118 @@
+# 🌱 FarmTech Solutions – Modelagem de Banco de Dados (MER e DER)
+
+## 📘 Objetivo
+A proposta deste projeto é desenvolver um modelo de banco de dados relacional para atender às necessidades da startup **FarmTech Solutions**, que atua na área de Agricultura Digital. O sistema será utilizado por produtores rurais para otimizar o uso de água e nutrientes com base em dados coletados por sensores instalados em suas plantações.
+
+Esses sensores coletam dados de umidade, pH e nutrientes do solo (fósforo e potássio) em tempo real, permitindo análises precisas para:
+- Ajuste de irrigação;
+- Aplicação controlada de nutrientes;
+- Previsão de necessidades futuras com base em histórico.
+
+---
+
+## 📊 Informações Relevantes e Dados Necessários
+
+### Exemplo 1: Quantidade total de água aplicada por mês
+- Data/hora da aplicação de água (`application_datetime`)
+- Quantidade aplicada (`amount_liters`)
+
+### Exemplo 2: Variação do nível de pH ao longo do tempo
+- Data/hora da leitura do sensor de pH (`reading_datetime`)
+- Valor registrado (`value`) com tipo `S2` (pH)
+
+---
+
+## 🧱 Entidades e Atributos
+
+### 1. `Farm` (Fazenda)
+- `id` (INTEGER, PK)
+- `name` (VARCHAR)
+- `location` (VARCHAR)
+- `owner_name` (VARCHAR)
+
+### 2. `Crop` (Cultura)
+- `id` (INTEGER, PK)
+- `farm_id` (INTEGER, FK)
+- `name` (VARCHAR)
+- `area_hectares` (DOUBLE)
+- `start_date` (DATETIME)
+
+### 3. `Sensor`
+- `id` (INTEGER, PK)
+- `type` (VARCHAR) – S1 (umidade), S2 (pH), S3 (NPK)
+- `modelo` (VARCHAR)
+- `installation_date` (DATETIME)
+
+### 4. `SensorReading` (Leitura do Sensor)
+- `id` (INTEGER, PK)
+- `sensor_id` (INTEGER, FK)
+- `crop_id` (INTEGER, FK)
+- `farm_id` (INTEGER, FK)
+- `reading_datetime` (DATETIME)
+- `value` (DOUBLE)
+
+### 5. `WaterApplication` (Aplicação de Água)
+- `id` (INTEGER, PK)
+- `crop_id` (INTEGER, FK)
+- `farm_id` (INTEGER, FK)
+- `application_datetime` (DATETIME)
+- `amount_liters` (DOUBLE)
+
+### 6. `NutrientApplication` (Aplicação de Nutrientes)
+- `id` (INTEGER, PK)
+- `crop_id` (INTEGER, FK)
+- `farm_id` (INTEGER, FK)
+- `application_datetime` (DATETIME)
+- `phosphorus_mg` (DOUBLE)
+- `potassium_mg` (DOUBLE)
+
+### 7. `CropSensor` (Relacionamento N:M entre Crop e Sensor)
+- `crop_id` (INTEGER, PK, FK)
+- `sensor_id` (INTEGER, PK, FK)
+- `installed_at` (DATETIME)
+
+---
+
+## 🔗 Relacionamentos
+
+- `Farm` 1:N `Crop`
+- `Crop` 1:N `SensorReading`
+- `Sensor` 1:N `SensorReading`
+- `Crop` 1:N `WaterApplication`
+- `Crop` 1:N `NutrientApplication`
+- `Crop` N:M `Sensor` via `CropSensor`
+
+---
+
+## ♻️ Cardinalidades
+
+| Entidade Origem | Entidade Destino      | Tipo | Descrição                                     |
+|-----------------|------------------------|------|-----------------------------------------------|
+| Farm            | Crop                   | 1:N  | Uma fazenda possui várias culturas            |
+| Crop            | SensorReading          | 1:N  | Uma cultura possui várias leituras de sensor  |
+| Sensor          | SensorReading          | 1:N  | Um sensor gera várias leituras                |
+| Crop            | WaterApplication       | 1:N  | Uma cultura pode ter várias aplicações de água|
+| Crop            | NutrientApplication    | 1:N  | Uma cultura pode ter várias aplicações de nutrientes |
+| Crop            | Sensor (via CropSensor)| N:M  | Um sensor pode ser usado em várias culturas   |
+
+---
+
+## 🔢 Tipos de Dados
+
+| Tipo     | Descrição                        |
+|----------|----------------------------------|
+| INTEGER  | Chave primária e estrangeira     |
+| VARCHAR  | Texto curto                      |
+| DOUBLE   | Números decimais para medidas    |
+| DATETIME | Data e hora                      |
+
+---
+
+## 🗂️ Estrutura Esperada no Repositório
+
+- `README.md` – este documento explicando o modelo lógico (MER)
+- `FarmTechModel.dmd` – arquivo de modelagem criado no SQL Developer Data Modeler
+- `der_farmtech.png` – imagem exportada do DER
+
+
+---
